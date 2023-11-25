@@ -1,0 +1,46 @@
+from flask import Flask, render_template, request, redirect, url_for
+import requests
+from bs4 import BeautifulSoup
+from fake_useragent import UserAgent
+
+app = Flask(__name__)
+
+def parse(url):
+    user = UserAgent()
+    headers = {'User-Agent': user.random}
+
+    page = requests.get(url, headers=headers)
+    soup = BeautifulSoup(page.text, 'html.parser')
+    seria = soup.find('span', class_="app-catalog-nhng7j e1l49rf80")
+    brand = soup.find('span', class_="app-catalog-nhng7j e1l49rf80")
+    display = soup.find('span', class_="app-catalog-kwpt08 eetknoe0")
+    price = soup.find('span', class_="e1j9birj0 e106ikdt0 app-catalog-1f8xctp e1gjr6xo0")
+    pamyat = soup.find_all('span', class_="app-catalog-kwpt08 eetknoe0")[2]
+    processor = soup.find_all('span', class_="app-catalog-kwpt08 eetknoe0")[1]
+    razmer = soup.find_all('span', class_="app-catalog-kwpt08 eetknoe0")[5]
+    razmer = razmer.text
+    brand = brand.text
+    display = display.text
+    pamyat = pamyat.text
+    processor = processor.text
+
+    return razmer, brand, display, pamyat, processor
+
+@app.route('/')
+def index():
+    title = "Парсер citilink"
+    return render_template('index.html', title=title)
+
+@app.route('/parser', methods=['GET', 'POST'])
+def parser():
+    title = "Parser"
+    ssylka = ""
+    razmer, brand, display, pamyat, processor = "", "", "", "", ""
+    if request.method == 'POST':
+        ssylka = request.form['ssylka']
+        razmer, brand, display, pamyat, processor = parse(ssylka)
+        return render_template('result.html', title=title, razmer=razmer, brand=brand, display=display, pamyat=pamyat, processor=processor)
+    return render_template('parser.html', title=title, ssylka=ssylka)
+
+if __name__ == '__main__':
+    app.run(debug=True)
