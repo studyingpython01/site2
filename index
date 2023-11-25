@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ title }}</title>
+</head>
+<body>
+    <h1>{{ title }}</h1>
+    <p>Привет! Чтобы найти нужную информацию, вставь ссылку ниже:</p>
+    <a href="/parser">Перейти на страницу с парсером</a>
+</body>
+</html>
